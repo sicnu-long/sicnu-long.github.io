@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ML_CS229_exercise1 - Long&#39;s Blog</title><link rel="apple-touch-icon" href="/images/favicons/apple-touch-icon.png" sizes="180x180">
+<link rel="icon" href="/images/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/images/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
+<link rel="manifest" href="/images/favicons/manifest.json">
+<link rel="icon" href="/images/favicons/favicon.ico">
+<meta name="keywords" content="" />
+<meta name="description" content="" /><meta itemprop="name" content="ML_CS229_exercise1">
+<meta itemprop="description" content="Programming Exercise of Machine Learning andrew ng&rsquo;CS 229 Exercise 1: Linear Regression Linear regression with one variable In this part of this exercise, you will implement linear regression with one variable to predict profits for a food truck. Suppose you are the CEO of a restaurant franchise and are considering different cities for opening a new outlet. The chain already has trucks in various cities and you have data for"><meta itemprop="datePublished" content="2021-09-04T17:22:03+08:00" />
+<meta itemprop="dateModified" content="2021-09-04T17:22:03+08:00" />
+<meta itemprop="wordCount" content="1953">
+<meta itemprop="keywords" content="" /><meta property="og:title" content="ML_CS229_exercise1" />
+<meta property="og:description" content="Programming Exercise of Machine Learning andrew ng&rsquo;CS 229 Exercise 1: Linear Regression Linear regression with one variable In this part of this exercise, you will implement linear regression with one variable to predict profits for a food truck. Suppose you are the CEO of a restaurant franchise and are considering different cities for opening a new outlet. The chain already has trucks in various cities and you have data for" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/en/posts/ml_cs229_exercise1/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-09-04T17:22:03+08:00" />
+<meta property="article:modified_time" content="2021-09-04T17:22:03+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ML_CS229_exercise1"/>
+<meta name="twitter:description" content="Programming Exercise of Machine Learning andrew ng&rsquo;CS 229 Exercise 1: Linear Regression Linear regression with one variable In this part of this exercise, you will implement linear regression with one variable to predict profits for a food truck. Suppose you are the CEO of a restaurant franchise and are considering different cities for opening a new outlet. The chain already has trucks in various cities and you have data for"/>
+<meta data-name="palette" content="blue"><link rel="preload" href="/css/bundle.min.6432e1eb8529dcd2047cf814f92cb64eca4d65058b306e0630c8777240297fa4.css" integrity="sha256-ZDLh64Up3NIEfPgU&#43;Sy2TspNZQWLMG4GMMh3ckApf6Q=" crossorigin="anonymous" as="style" onload="this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/css/bundle.min.6432e1eb8529dcd2047cf814f92cb64eca4d65058b306e0630c8777240297fa4.css" integrity="sha256-ZDLh64Up3NIEfPgU&#43;Sy2TspNZQWLMG4GMMh3ckApf6Q=" crossorigin="anonymous"></noscript><script src="/js/bundle.min.e6c3efd10161a92e07fe2d9d43ea44ddeffebce086eaa6a33a83e56aa5f388c7.js" integrity="sha256-5sPv0QFhqS4H/i2dQ&#43;pE3e/&#43;vOCG6qajOoPlaqXziMc=" crossorigin="anonymous"></script><script defer src="/js/katex.675a54ca18bdabee58c8e458c85196917e0496ce1a5b6f95b6b9cb70d01fe1d8.js" integrity="sha256-Z1pUyhi9q&#43;5YyORYyFGWkX4Els4aW2&#43;VtrnLcNAf4dg=" crossorigin="anonymous"></script>
+</head><body><header><nav class="navbar navbar-expand-xl fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="/en/">
+      <img class="logo" alt="Logo" src="/images/logo_long.png"
+   width="135" height="126" loading="lazy" />
+Long&#39;s Blog</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-1 mb-2 mb-lg-0"><form class="search-bar d-flex ms-1" action="/en/search">
+  <div class="input-group input-group-sm">
+    <button class="btn btn-search disabled position-absolute left-0" type="submit" aria-label="submit"><i class="fas fa-fw fa-search"></i></button>
+    <input class="form-control rounded-pill" id="searchQuery" name="q" type="search" aria-label="Search">
+  </div>
+</form></ul><ul class="navbar-nav me-1 mb-2 mb-lg-0 me-1 ms-auto"><li class="nav-item">
+          <a class="nav-link" href="/en/archives/">
+            <i class="fas fa-fw fa-file-archive"></i>Archives
+          </a>
+        </li><li class="nav-item">
+          <a class="nav-link" href="/en/categories/">
+            <i class="fas fa-fw fa-folder"></i>Categories
+          </a>
+        </li><li class="nav-item">
+          <a class="nav-link" href="/en/tags/">
+            <i class="fas fa-fw fa-tags"></i>Tags
+          </a>
+        </li><li class="nav-item">
+          <a class="nav-link" href="/en/series/">
+            <i class="fas fa-fw fa-columns"></i>Series
+          </a>
+        </li><li class="nav-item dropdown">
+          <a class="nav-link" id="navbarDropdown-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-fw fa-chevron-circle-down"></i>Dropdown
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown-dropdown"><li>
+              <a class="dropdown-item"
+                href="https://github.com/sicnu-long" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-fw fa-github"></i>Github
+              </a>
+            </li></ul>
+        </li><li class="nav-item dropdown">
+  <a class="nav-link" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fas fa-fw fa-language"></i> English
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="languageDropdown"><li><a class="dropdown-item" href="/zh-cn/">简体中文</a></li></ul>
+</li><li class="nav-item">
+  <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasSettings" role="button"
+    aria-controls="offcanvasSettings">
+    <i class="fas fa-fw fa-sliders-h"></i> Settings
+  </a>
+</li>
+
+<div class="offcanvas offcanvas-end surface h-100" tabindex="-1" id="offcanvasSettings"
+  aria-labelledby="offcanvasSettingsLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" w id="offcanvasSettingsLabel"><i class="fas fa-fw fa-sliders-h"></i> Settings</h5>
+    <a role="button" data-bs-dismiss="offcanvas" aria-label="Close">
+      <span class="fas fa-2x fa-fw fa-times"></span>
+    </a>
+  </div>
+  <div class="offcanvas-body"><section class="setting">
+  <form class="row">
+    <div class="col-auto">
+      <label><i class="fas fa-fw fa-adjust"></i> Mode</label>
+    </div>
+    <div class="col-auto ms-auto">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="modeSwitcher">
+      </div>
+    </div>
+  </form>
+</section>
+<section class="setting">
+  <form class="font-size-switcher-form row">
+    <div class="col-auto">
+      <label for="fontSize" class="form-label"><i class="fas fa-fw fa-font"></i> Font Size</label>
+    </div>
+    <div class="col-auto ms-auto">
+      <input type="range" class="form-range" min="-2" max="2" id="fontSize">
+    </div>
+  </form>
+</section>
+
+</div>
+</div></ul>
+    </div>
+  </div>
+</nav>
+</header>
+<main role="main" class="container">
+      <div class="row content">
+<div class="col-lg-8">
+  <div class="container"><nav class="row" aria-label="breadcrumb">
+  <ol class="breadcrumb surface"><li class="breadcrumb-item"><a href="/en/">Home</a></li><li class="breadcrumb-item"><a href="/en/posts/">Posts</a></li><li class="breadcrumb-item active">ML_CS229_exercise1</li></ol>
+</nav><article class="post row surface"><div class="post-panel-wrapper">
+  <div class="post-panel d-flex flex-column">
+    <a id="sidebarToggler" class="action d-none d-lg-block" role="button">
+  <i class="fas fa-fw fa-expand-alt fa-rotate-45"></i>
+</a>
+  
+    
+
+    <a class="action btn-reward" role="button" data-bs-toggle="modal" data-bs-target="#rewardModal" title="Reward">
+  <i class="fas fa-fw fa-medal"></i>
+</a>
+    <a class="action" data-bs-container="body" data-bs-toggle="popover" data-bs-html="true" data-bs-placement="bottom"
+  data-bs-trigger="focus" tabindex="0"
+  data-bs-content="&lt;a target=&#34;_blank&#34; rel=&#34;license noopener noreferrer&#34; href=&#34;https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en&#34;&gt;CC BY-NC-ND 4.0 &lt;i class=&#34;fab fa-fw fa-creative-commons&#34;&gt;&lt;/i&gt;&lt;i class=&#34;fab fa-fw fa-creative-commons-by&#34;&gt;&lt;/i&gt;&lt;i class=&#34;fab fa-fw fa-creative-commons-nc&#34;&gt;&lt;/i&gt;&lt;i class=&#34;fab fa-fw fa-creative-commons-nd&#34;&gt;&lt;/i&gt;&lt;/a&gt;
+">
+  <i class="fas fa-fw fa-copyright"></i>
+</a>
+    <a id="btnTOC" class="fas fa-fw fa-list-alt" data-bs-toggle="offcanvas" href="#offcanvasTOC" aria-controls="offcanvasTOC" role="button">
+</a>
+  </div>
+</div>
+<h1 class="post-title my-3">ML_CS229_exercise1
+</h1><div class="post-meta mb-3"><span class="post-reading-time me-2">
+    <i class="fas fa-fw fa-coffee"></i>4 min read
+  </span><span class="post-taxonomies"></span>
+</div>
+<div class="offcanvas offcanvas-end surface" tabindex="-1" id="offcanvasTOC" aria-labelledby="offcanvasTOCLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasTOCLabel">Table Of Contents</h5>
+    <a role="button" data-bs-dismiss="offcanvas" aria-label="Close">
+      <span class="fas fa-2x fa-fw fa-times"></span>
+    </a>
+  </div>
+  <div class="offcanvas-body">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#exercise-1-linear-regression">Exercise 1: Linear Regression</a>
+      <ul>
+        <li><a href="#linear-regression-with-one-variable">Linear regression with one variable</a></li>
+      </ul>
+    </li>
+    <li><a href="#visualizing-jtheta">visualizing $J(\theta)$</a>
+      <ul>
+        <li><a href="#linear-regression-with-multiple-variables">Linear regression with multiple variables</a></li>
+        <li><a href="#normal-equations">Normal Equations</a></li>
+        <li><a href="#prediction">Prediction</a></li>
+      </ul>
+    </li>
+    <li><a href="#difference-between-array-and-matrix-in-numpy">Difference Between array and matrix in numpy</a>
+      <ul>
+        <li><a href="#dimension">Dimension</a></li>
+        <li><a href="#attribute">Attribute</a></li>
+        <li><a href="#method">Method</a></li>
+        <li><a href="#operation">Operation</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div><div class="post-content mb-3"><h1 id="programming--exercise-of-machine-learning">Programming  Exercise of Machine Learning</h1>
+<p>andrew ng&rsquo;CS 229</p>
+<h2 id="exercise-1-linear-regression">Exercise 1: Linear Regression</h2>
+<h3 id="linear-regression-with-one-variable">Linear regression with one variable</h3>
+<p>In this part of this exercise, you will implement linear regression with one variable to predict profits for a food truck. Suppose you are the CEO of a restaurant franchise and are considering different cities for opening a new outlet. The chain already has trucks in various cities and you have data for profits and populations from the cities.</p>
+<p>You would like to use this data to help you select which city to expand to next.</p>
+<p>The file ex1data1.txt contains the dataset for our linear regression problem. The first column is the population of a city and the second column is the profit of a food truck in that city. A negative value for profit indicates a loss.</p>
+<h4 id="import-and-visualize-data">import and visualize data</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="ln">2</span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="ln">3</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;ex1data1.txt&#39;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span><span class="s1">&#39;Profit&#39;</span><span class="p">])</span>
+<span class="ln">2</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln">2</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln">3</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Profit&#39;</span><span class="p">])</span>
+<span class="ln">4</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Scatter plot of training data&#39;</span><span class="p">)</span>
+<span class="ln">5</span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Population&#39;</span><span class="p">)</span>
+<span class="ln">6</span><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Profit&#39;</span><span class="p">)</span>
+</code></pre></div><pre><code>Text(0, 0.5, 'Profit')
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise1/output_4_2.png"
+   width="2058" height="2060" loading="lazy" />
+
+</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">df</span><span class="p">[</span><span class="s2">&#34;one&#34;</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+<span class="ln">2</span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;one&#39;</span><span class="p">,</span><span class="s1">&#39;Population&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="ln">3</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Profit&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+<span class="ln">4</span><span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="ln">5</span><span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div><pre><code>(97, 2)
+(97, 1)
+</code></pre>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">iter_num</span> <span class="o">=</span> <span class="mi">1000</span><span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">iter_num</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span><span class="n">cost_comput</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>    <span class="n">m</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">)))</span>    <span class="n">cost</span><span class="o">=</span><span class="p">[]</span>    <span class="n">theta_arr</span><span class="o">=</span><span class="p">[]</span>    <span class="n">distance</span> <span class="o">=</span> <span class="n">X</span><span class="o">*</span><span class="n">theta</span><span class="o">-</span><span class="n">y</span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iter_num</span><span class="p">):</span>        <span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">-</span>  <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">distance</span><span class="p">))</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">alpha</span><span class="o">/</span><span class="n">m</span>        <span class="n">theta_arr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>        <span class="n">distance</span> <span class="o">=</span> <span class="n">X</span><span class="o">*</span><span class="n">theta</span><span class="o">-</span><span class="n">y</span>        <span class="k">if</span> <span class="n">cost_comput</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>            <span class="n">cost</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">float</span><span class="p">(</span><span class="n">distance</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">m</span><span class="p">))</span> <span class="p">)</span><span class="c1">#             下面也可以#             cost.append(float(sum(np.power(distance,2))) / (2 * m) )    return theta,cost,theta_arrtheta,cost,theta_arr = gradient_descent(X,y,iter_num)print(theta)</span>
+</code></pre></div><pre><code>[[-3.78841926] [ 1.18224801]]
+</code></pre>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inlineplt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">iter_num</span><span class="p">),</span><span class="n">cost</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Scatter plot of training data&#39;</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Popualation&#39;</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Profit&#39;</span><span class="p">)</span>
+</code></pre></div><pre><code>Text(0, 0.5, 'Profit')
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise1/output_8_2.png"
+   width="2988" height="2060" loading="lazy" />
+
+</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Population</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">df</span><span class="o">.</span><span class="n">Population</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="n">f</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Profit&#39;</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Training Data&#39;</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Population&#39;</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Profit&#39;</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Predicted Profit vs. Population Size&#39;</span><span class="p">)</span>
+</code></pre></div><pre><code>Text(0.5, 1.0, 'Predicted Profit vs. Population Size')
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise1/output_9_2.png"
+   width="2988" height="2060" loading="lazy" />
+
+</p>
+<h2 id="visualizing-jtheta">visualizing $J(\theta)$</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">theta0_vals</span><span class="p">,</span> <span class="n">theta1_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span>    <span class="c1"># reshape如果中有参数等于-1的话，    # 那么Numpy会根据剩下的维度计算出数组的另外一个shape属性值        np.linspace(-10, 10, 100).reshape(-1, 1),        np.linspace(-1, 4, 100).reshape(-1, 1),    )J_vals = np.c_[theta0_vals.ravel(), theta1_vals.ravel()]J_vals = np.power(J_vals * X.T - y.T,2).TJ_vals=sum(J_vals).T / (X.shape[0] * 2)J_vals = J_vals.reshape(theta0_vals.shape)</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">theta0_vals</span><span class="p">,</span> <span class="n">theta1_vals</span><span class="p">,</span> <span class="n">J_vals</span><span class="p">,</span><span class="n">linewidths</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">levels</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;rainbow&#39;</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s2">&#34;x&#34;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s2">&#34;r&#34;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&#34;Contour,showing minimum&#34;</span><span class="p">)</span>
+</code></pre></div><pre><code>Text(0.5, 1.0, 'Contour,showing minimum')
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise1/output_12_2.png"
+   width="2521" height="2004" loading="lazy" />
+
+</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">theta_x</span><span class="p">,</span><span class="n">theta_y</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">theta_arr</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">theta0_vals</span><span class="p">,</span> <span class="n">theta1_vals</span><span class="p">,</span> <span class="n">J_vals</span><span class="p">,</span><span class="n">linewidths</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">levels</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;rainbow&#39;</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">theta_x</span><span class="p">,</span><span class="n">theta_y</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s2">&#34;x&#34;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s2">&#34;r&#34;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&#34;Track of Theta&#34;</span><span class="p">)</span>
+</code></pre></div><pre><code>Text(0.5, 1.0, 'Track of Theta')
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise1/output_13_2.png"
+   width="2521" height="2004" loading="lazy" />
+
+</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">pltplt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span> <span class="n">ax3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span><span class="n">ax3</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">elev</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">azim</span><span class="o">=-</span><span class="mi">130</span><span class="p">)</span> <span class="c1"># 旋转图像初始视角ax3.plot_surface(theta0_vals,theta1_vals,J_vals,cmap=&#39;rainbow&#39;)plt.title(&#34;Surface&#34;)</span>
+</code></pre></div><pre><code>Text(0.5, 0.92, 'Surface')
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise1/output_14_2.png"
+   width="2325" height="2387" loading="lazy" />
+
+</p>
+<h3 id="linear-regression-with-multiple-variables">Linear regression with multiple variables</h3>
+<p>In this part, you will implement linear regression with multiple variables to predict the prices of houses. Suppose you are selling your house and you want to know what a good market price would be. One way to do this is to first collect information on recent houses sold and make a model of housing prices.</p>
+<p>The file ex1data2.txt contains a training set of housing prices in Portland, Oregon. The first column is the size of the house (in square feet), the second column is the number of bedrooms, and the third column is the price of the house.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">multi_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;ex1data2.txt&#39;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Size&#39;</span><span class="p">,</span> <span class="s1">&#39;Bedrooms&#39;</span><span class="p">,</span> <span class="s1">&#39;Price&#39;</span><span class="p">])</span><span class="n">multi_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {    vertical-align: top;}.dataframe thead th {    text-align: right;}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<h4 id="feature-normalizationfeature-scaling">Feature Normalization/Feature Scaling</h4>
+<p>By looking at the values, note that house sizes are about
+1000 times the number of bedrooms. When features differ by orders of magnitude, first performing feature scaling can make gradient descent converge much more quickly.</p>
+<h5 id="标准化--z值归一化standardization--z-score-normalization">标准化 / z值归一化（standardization / z-score normalization）</h5>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">multi_X</span> <span class="o">=</span> <span class="n">multi_df</span><span class="p">[[</span><span class="s2">&#34;Size&#34;</span><span class="p">,</span><span class="s2">&#34;Bedrooms&#34;</span><span class="p">]]</span><span class="n">multi_X</span> <span class="o">=</span> <span class="p">(</span><span class="n">multi_X</span> <span class="o">-</span> <span class="n">multi_X</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">/</span> <span class="n">multi_X</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="n">multi_X</span><span class="p">[</span><span class="s2">&#34;one&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="n">multi_X</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {    vertical-align: top;}.dataframe thead th {    text-align: right;}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<h4 id="selecting-learning-rates">Selecting learning rates</h4>
+<p>In this part of the exercise, you will get to try out different learning rates for the dataset and find a learning rate that converges quickly.</p>
+<p>if your value of $ J\left( \theta  \right) $ increases or even blows up,adjust your learning rate and try again. We recommend trying values of the learning rate α on a log-scale, at multiplicative steps of about 3 times the previous value (i.e., 0.3, 0.1, 0.03, 0.01 and so on).</p>
+<p>If your learning rate is too large, J(θ) can diverge and ‘blow up’, resulting in values which are too large for computer
+calculations.<br>
+如果学习率太大会导致$\theta$的值溢出，使执行出现警告，并且$\theta$会返回<code>NaN</code>代表值为$\infty$</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">multi_X</span><span class="p">)</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">multi_df</span><span class="p">[</span><span class="s1">&#39;Price&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">Titer_num</span> <span class="o">=</span> <span class="mi">50</span><span class="n">theta</span><span class="p">,</span><span class="n">cost</span><span class="p">,</span><span class="n">theta_arr</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">iter_num</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">iter_num</span><span class="p">),</span><span class="n">cost</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Scatter plot of training data&#39;</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Popualation&#39;</span><span class="p">)</span><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Profit&#39;</span><span class="p">)</span>
+</code></pre></div><pre><code>Text(0, 0.5, 'Profit')
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise1/output_21_2.png"
+   width="2962" height="2060" loading="lazy" />
+
+</p>
+<h3 id="normal-equations">Normal Equations</h3>
+<p>正规方程是通过求解下面的方程来找出使得代价函数最小的参数的：$\frac{\partial }{\partial {{\theta }<em>{j}}}J\left( {{\theta }</em>{j}} \right)=0$ 。
+假设我们的训练集特征矩阵为 X（包含了${{x}_{0}}=1$）并且我们的训练集结果为向量 y，则利用正规方程解出向量: $$\theta ={{\left( {{X}^{T}}X \right)}^{-1}}{{X}^{T}}y$$</p>
+<p>Using this formula does not require any feature scaling, and you will get
+an exact solution in one calculation: there is no “loop until convergence” like
+in gradient descent.</p>
+<h4 id="梯度下降与正规方程的比较">梯度下降与正规方程的比较：</h4>
+<p>梯度下降：需要选择学习率α，需要多次迭代，当特征数量n大时也能较好适用，适用于各种类型的模型</p>
+<p>正规方程：不需要选择学习率α，一次计算得出，需要计算${{\left( {{X}^{T}}X \right)}^{-1}}$，如果特征数量n较大则运算代价大，因为矩阵逆的计算时间复杂度为$O(n3)$，通常来说当$n$小于10000 时还是可以接受的，只适用于线性模型，不适合逻辑回归模型等其他模型</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="k">def</span> <span class="nf">normal_equation</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>    <span class="k">return</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">I</span> <span class="o">*</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">y</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="c1"># ex1data1.txtdf = pd.read_csv(&#39;ex1data1.txt&#39;,header=None,names=[&#39;Population&#39;,&#39;Profit&#39;])df[&#34;one&#34;] = 1X = np.mat(df[[&#39;one&#39;,&#39;Population&#39;]].values)y = np.mat(df[&#39;Profit&#39;].values).Ttheta = normal_equation(X,y)print(theta)</span>
+</code></pre></div><pre><code>[[-3.89578088] [ 1.19303364]]
+</code></pre>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">multi_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;ex1data2.txt&#39;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Size&#39;</span><span class="p">,</span> <span class="s1">&#39;Bedrooms&#39;</span><span class="p">,</span> <span class="s1">&#39;Price&#39;</span><span class="p">])</span><span class="n">multi_df</span><span class="p">[</span><span class="s2">&#34;one&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">multi_df</span><span class="p">[[</span><span class="s1">&#39;one&#39;</span><span class="p">,</span><span class="s1">&#39;Size&#39;</span><span class="p">,</span><span class="s1">&#39;Bedrooms&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">multi_df</span><span class="p">[</span><span class="s1">&#39;Price&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">Ttheta</span> <span class="o">=</span> <span class="n">normal_equation</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="nb">print</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+</code></pre></div><pre><code>[[89597.9095428 ] [  139.21067402] [-8738.01911233]]
+</code></pre>
+<h3 id="prediction">Prediction</h3>
+<p>Now, once you have found $\theta$ using this
+method, use it to make a price prediction for a 1650-square-foot house with 3 bedrooms. You should find that gives the same predicted price as the value you obtained using the model fit with gradient descent</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">price</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1650</span><span class="o">*</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+</code></pre></div><pre><code>293081.46433489426
+</code></pre>
+<h2 id="difference-between-array-and-matrix-in-numpy">Difference Between array and matrix in numpy</h2>
+<p>matrix是array的分支</p>
+<h3 id="dimension">Dimension</h3>
+<p>numpy array(ndarrays) can be N-dimension</p>
+<p>numpy matrix must be 2-dimension</p>
+<p>注意：<br>
+1.一维的numpy数组不是向量或矩阵,此时shape属性中是没有列值的,如果需要当作向量来操,可以使用list of list来生成array</p>
+<p>2.matrix和array在很多时候都是通用的，由于array可以表示更高维度的数据，更灵活，速度更快，官方建议选择array,必要时再转换成matrix</p>
+<h3 id="attribute">Attribute</h3>
+<p>numpy array和matrix 都有<code>.T</code>属性来表示它们的转置</p>
+<p>matrix还有<code>.H</code>属性表示共轭转置,<code>.I</code>表示逆矩阵</p>
+<h3 id="method">Method</h3>
+<p>两者可以互相用<code>.asmatrix()</code>或<code>.asarray()</code>互相转换</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="ln">2</span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># arr 不算矩阵</span>
+<span class="ln">3</span><span class="nb">print</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="ln">4</span><span class="nb">print</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="ln">5</span>
+<span class="ln">6</span><span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="ln">7</span><span class="nb">print</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="ln">8</span><span class="nb">print</span><span class="p">(</span><span class="n">mat</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="ln">9</span>
+</code></pre></div><h3 id="operation">Operation</h3>
+<h4 id="array">array</h4>
+<p>numpy array 大多数操作符号都是element-wise的,比如<code>*</code>操作和<code>np.multiply()</code>函数,都是对应元素相乘(element-wise multiplication)</p>
+<p>例如：</p>
+<p>$$ x = \begin{bmatrix}
+1 &amp; 2\<br>
+3 &amp; 4
+\end{bmatrix},
+y=\begin{bmatrix}
+1 \ 2
+\end{bmatrix},
+z=\begin{bmatrix}
+1 &amp; 2
+\end{bmatrix}$$
+$$ x<em>y=\begin{bmatrix}
+1 &amp; 2\<br>
+6 &amp; 8
+\end{bmatrix},
+x</em>z=\begin{bmatrix}
+1 &amp; 4\<br>
+3 &amp; 8
+\end{bmatrix}
+$$</p>
+<p>对应元素相乘一般需要向量的行或列与矩阵相等,或者两个矩阵行与列相等</p>
+<p><code>@</code>操作和<code>.dot()</code>方法或<code>np.dot()</code>函数,进程矩阵乘法</p>
+<h4 id="matrix">matrix</h4>
+<p>matrix的优势就是相对简单的运算符号,可以直接用<code>*</code>操作表示矩阵乘法,但是也兼容array的函数和方法</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span> <span class="p">])</span>
+<span class="ln">2</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]])</span>
+<span class="ln">3</span><span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="ln">4</span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="ln">5</span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+</code></pre></div></div><div class="modal fade" id="rewardModal" tabindex="-1" aria-labelledby="rewardModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content surface">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rewardModalLabel"><i class="fas fa-fw fa-medal"></i>Reward</h5>
+        <a href="#" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-fw fa-times"></i></a>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs mb-3" role="tablist"><li class="nav-item" role="presentation">
+            <a class="nav-link active" id="reward-alipay-tab" data-bs-toggle="tab" href="#reward-alipay" role="tab" aria-controls="reward-alipay" aria-selected="true">
+              <i class="fab fa-fw fa-alipay"></i>Alipay
+            </a>
+          </li><li class="nav-item" role="presentation">
+            <a class="nav-link" id="reward-wechat-tab" data-bs-toggle="tab" href="#reward-wechat" role="tab" aria-controls="reward-wechat" aria-selected="true">
+              <i class="fab fa-fw fa-weixin"></i>WeChat
+            </a>
+          </li></ul>
+        <div class="tab-content" id="rewardTabContent"><div class="tab-pane fade post-reward-content show active" id="reward-alipay" role="tabpanel" aria-labelledby="reward-alipay-tab">
+            <img class="img-fluid post-reward-img" src="/images/reward/alipay.png" loading="lazy" />
+          </div><div class="tab-pane fade post-reward-content show" id="reward-wechat" role="tabpanel" aria-labelledby="reward-wechat-tab">
+            <img class="img-fluid post-reward-img" src="/images/reward/wechat.png" loading="lazy" />
+          </div></div>
+      </div>
+    </div>
+  </div>
+</div><hr /><div class="post-navs d-flex mb-3 justify-content-between">
+  <div class="post-nav w-50"><div class="prev-post btn btn-sm">
+      <a href="/en/about/">About
+</a>
+    </div></div>
+  <div class="post-nav flex-row-reverse"><div class="next-post btn btn-sm">
+      <a href="/en/posts/ml_cs229_exercise2/">ML_CS229_exercise2
+</a>
+    </div></div>
+</div><section class="related-posts">
+    <h3>Related Posts</h3>
+    <ul class="related-posts"><li><a href="/en/about/">About
+</a></li><li><a href="/en/tutorialnotebook/">
+</a></li></ul>
+  </section></article><div class="post-comments surface row"><script src="https://utteranc.es/client.js"
+  repo="sicnu-long/sicnu-long.github.io"
+  issue-term="pathname"
+  label="comment"
+  theme="github-light"
+  crossorigin="anonymous"
+  async>
+</script></div></div>
+</div><aside class="col-lg-4 sidebar d-flex">
+  <div class="container"><section class="profile surface row text-center">
+  <div class="col-12 d-flex align-items-center justify-content-center"><img class="profile-avatar rounded-circle" alt="SICNU-Long" src="/images/profile.png"
+   width="500" height="500" loading="lazy" />
+</div>
+  <div class="col-12 profile-meta"><div class="profile-name">SICNU-Long</div><div class="profile-bio">Carpe diem</div><div class="profile-company"><i class="fas fa-fw fa-building"></i>Sichuan Normal University</div><div class="profile-location"><i class="fas fa-fw fa-map-marker-alt"></i>Chengdu</div><div class="profile-about"><i class="fas fa-fw fa-info-circle"></i><a href="/en/about/">About</a></div></div>
+</section>
+  <section class="recent-posts row surface">
+  <h4>Recent Posts</h4>
+  <ul><li><a href="/en/posts/tutorialnotebook/">TutorialNotebook
+</a></li><li><a href="/en/posts/ml_cs229_exercise2/">ML_CS229_exercise2
+</a></li><li><a href="/en/posts/ml_cs229_exercise1/">ML_CS229_exercise1
+</a></li></ul>
+</section></div>
+</aside>
+</div>
+    </main><footer class="footer mt-auto py-3 text-center container"><nav class="social-links nav my-2 justify-content-center"><a class="nav-link social-link" href="mailto:sicnu-long@stu.sicnu.edu.cn" title="Email">
+      <i class="fas fa-fw fa-2x fa-envelope"></i>
+    </a><a class="nav-link social-link" target="_blank" href="https://github.com/sicnu-long" title="GitHub" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-github"></i>
+      </a></nav>
+<div class="copyright mb-2">
+  Copyright © 2021-2021 Long. All Rights Reserved.
+</div>
+</footer>
+<a id="btnScrollToTop" class="btn-scroll-to-top">
+  <i class="fas fa-fw fa-chevron-circle-up fa-2x"></i>
+</a>
+</body>
+</html>

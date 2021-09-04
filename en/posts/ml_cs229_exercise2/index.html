@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ML_CS229_exercise2 - Long&#39;s Blog</title><link rel="apple-touch-icon" href="/images/favicons/apple-touch-icon.png" sizes="180x180">
+<link rel="icon" href="/images/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/images/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
+<link rel="manifest" href="/images/favicons/manifest.json">
+<link rel="icon" href="/images/favicons/favicon.ico">
+<meta name="keywords" content="" />
+<meta name="description" content="" /><meta itemprop="name" content="ML_CS229_exercise2">
+<meta itemprop="description" content="Logistic Regression In this part of the exercise, you will build a logistic regression model to predict whether a student gets admitted into a university. Suppose that you are the administrator of a university department and you want to determine each applicant’s chance of admission based on their results on two exams. You have historical data from previous applicants that"><meta itemprop="datePublished" content="2021-09-04T18:32:53+08:00" />
+<meta itemprop="dateModified" content="2021-09-04T18:32:53+08:00" />
+<meta itemprop="wordCount" content="2076">
+<meta itemprop="keywords" content="" /><meta property="og:title" content="ML_CS229_exercise2" />
+<meta property="og:description" content="Logistic Regression In this part of the exercise, you will build a logistic regression model to predict whether a student gets admitted into a university. Suppose that you are the administrator of a university department and you want to determine each applicant’s chance of admission based on their results on two exams. You have historical data from previous applicants that" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/en/posts/ml_cs229_exercise2/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-09-04T18:32:53+08:00" />
+<meta property="article:modified_time" content="2021-09-04T18:32:53+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ML_CS229_exercise2"/>
+<meta name="twitter:description" content="Logistic Regression In this part of the exercise, you will build a logistic regression model to predict whether a student gets admitted into a university. Suppose that you are the administrator of a university department and you want to determine each applicant’s chance of admission based on their results on two exams. You have historical data from previous applicants that"/>
+<meta data-name="palette" content="blue"><link rel="preload" href="/css/bundle.min.6432e1eb8529dcd2047cf814f92cb64eca4d65058b306e0630c8777240297fa4.css" integrity="sha256-ZDLh64Up3NIEfPgU&#43;Sy2TspNZQWLMG4GMMh3ckApf6Q=" crossorigin="anonymous" as="style" onload="this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/css/bundle.min.6432e1eb8529dcd2047cf814f92cb64eca4d65058b306e0630c8777240297fa4.css" integrity="sha256-ZDLh64Up3NIEfPgU&#43;Sy2TspNZQWLMG4GMMh3ckApf6Q=" crossorigin="anonymous"></noscript><script src="/js/bundle.min.e6c3efd10161a92e07fe2d9d43ea44ddeffebce086eaa6a33a83e56aa5f388c7.js" integrity="sha256-5sPv0QFhqS4H/i2dQ&#43;pE3e/&#43;vOCG6qajOoPlaqXziMc=" crossorigin="anonymous"></script><script defer src="/js/katex.675a54ca18bdabee58c8e458c85196917e0496ce1a5b6f95b6b9cb70d01fe1d8.js" integrity="sha256-Z1pUyhi9q&#43;5YyORYyFGWkX4Els4aW2&#43;VtrnLcNAf4dg=" crossorigin="anonymous"></script>
+</head><body><header><nav class="navbar navbar-expand-xl fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="/en/">
+      <img class="logo" alt="Logo" src="/images/logo_long.png"
+   width="135" height="126" loading="lazy" />
+Long&#39;s Blog</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-1 mb-2 mb-lg-0"><form class="search-bar d-flex ms-1" action="/en/search">
+  <div class="input-group input-group-sm">
+    <button class="btn btn-search disabled position-absolute left-0" type="submit" aria-label="submit"><i class="fas fa-fw fa-search"></i></button>
+    <input class="form-control rounded-pill" id="searchQuery" name="q" type="search" aria-label="Search">
+  </div>
+</form></ul><ul class="navbar-nav me-1 mb-2 mb-lg-0 me-1 ms-auto"><li class="nav-item">
+          <a class="nav-link" href="/en/archives/">
+            <i class="fas fa-fw fa-file-archive"></i>Archives
+          </a>
+        </li><li class="nav-item">
+          <a class="nav-link" href="/en/categories/">
+            <i class="fas fa-fw fa-folder"></i>Categories
+          </a>
+        </li><li class="nav-item">
+          <a class="nav-link" href="/en/tags/">
+            <i class="fas fa-fw fa-tags"></i>Tags
+          </a>
+        </li><li class="nav-item">
+          <a class="nav-link" href="/en/series/">
+            <i class="fas fa-fw fa-columns"></i>Series
+          </a>
+        </li><li class="nav-item dropdown">
+          <a class="nav-link" id="navbarDropdown-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-fw fa-chevron-circle-down"></i>Dropdown
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown-dropdown"><li>
+              <a class="dropdown-item"
+                href="https://github.com/sicnu-long" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-fw fa-github"></i>Github
+              </a>
+            </li></ul>
+        </li><li class="nav-item dropdown">
+  <a class="nav-link" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fas fa-fw fa-language"></i> English
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="languageDropdown"><li><a class="dropdown-item" href="/zh-cn/">简体中文</a></li></ul>
+</li><li class="nav-item">
+  <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasSettings" role="button"
+    aria-controls="offcanvasSettings">
+    <i class="fas fa-fw fa-sliders-h"></i> Settings
+  </a>
+</li>
+
+<div class="offcanvas offcanvas-end surface h-100" tabindex="-1" id="offcanvasSettings"
+  aria-labelledby="offcanvasSettingsLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" w id="offcanvasSettingsLabel"><i class="fas fa-fw fa-sliders-h"></i> Settings</h5>
+    <a role="button" data-bs-dismiss="offcanvas" aria-label="Close">
+      <span class="fas fa-2x fa-fw fa-times"></span>
+    </a>
+  </div>
+  <div class="offcanvas-body"><section class="setting">
+  <form class="row">
+    <div class="col-auto">
+      <label><i class="fas fa-fw fa-adjust"></i> Mode</label>
+    </div>
+    <div class="col-auto ms-auto">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="modeSwitcher">
+      </div>
+    </div>
+  </form>
+</section>
+<section class="setting">
+  <form class="font-size-switcher-form row">
+    <div class="col-auto">
+      <label for="fontSize" class="form-label"><i class="fas fa-fw fa-font"></i> Font Size</label>
+    </div>
+    <div class="col-auto ms-auto">
+      <input type="range" class="form-range" min="-2" max="2" id="fontSize">
+    </div>
+  </form>
+</section>
+
+</div>
+</div></ul>
+    </div>
+  </div>
+</nav>
+</header>
+<main role="main" class="container">
+      <div class="row content">
+<div class="col-lg-8">
+  <div class="container"><nav class="row" aria-label="breadcrumb">
+  <ol class="breadcrumb surface"><li class="breadcrumb-item"><a href="/en/">Home</a></li><li class="breadcrumb-item"><a href="/en/posts/">Posts</a></li><li class="breadcrumb-item active">ML_CS229_exercise2</li></ol>
+</nav><article class="post row surface"><div class="post-panel-wrapper">
+  <div class="post-panel d-flex flex-column">
+    <a id="sidebarToggler" class="action d-none d-lg-block" role="button">
+  <i class="fas fa-fw fa-expand-alt fa-rotate-45"></i>
+</a>
+  
+    
+
+    <a class="action btn-reward" role="button" data-bs-toggle="modal" data-bs-target="#rewardModal" title="Reward">
+  <i class="fas fa-fw fa-medal"></i>
+</a>
+    <a class="action" data-bs-container="body" data-bs-toggle="popover" data-bs-html="true" data-bs-placement="bottom"
+  data-bs-trigger="focus" tabindex="0"
+  data-bs-content="&lt;a target=&#34;_blank&#34; rel=&#34;license noopener noreferrer&#34; href=&#34;https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en&#34;&gt;CC BY-NC-ND 4.0 &lt;i class=&#34;fab fa-fw fa-creative-commons&#34;&gt;&lt;/i&gt;&lt;i class=&#34;fab fa-fw fa-creative-commons-by&#34;&gt;&lt;/i&gt;&lt;i class=&#34;fab fa-fw fa-creative-commons-nc&#34;&gt;&lt;/i&gt;&lt;i class=&#34;fab fa-fw fa-creative-commons-nd&#34;&gt;&lt;/i&gt;&lt;/a&gt;
+">
+  <i class="fas fa-fw fa-copyright"></i>
+</a>
+    <a id="btnTOC" class="fas fa-fw fa-list-alt" data-bs-toggle="offcanvas" href="#offcanvasTOC" aria-controls="offcanvasTOC" role="button">
+</a>
+  </div>
+</div>
+<h1 class="post-title my-3">ML_CS229_exercise2
+</h1><div class="post-meta mb-3"><span class="post-reading-time me-2">
+    <i class="fas fa-fw fa-coffee"></i>5 min read
+  </span><span class="post-taxonomies"></span>
+</div>
+<div class="offcanvas offcanvas-end surface" tabindex="-1" id="offcanvasTOC" aria-labelledby="offcanvasTOCLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasTOCLabel">Table Of Contents</h5>
+    <a role="button" data-bs-dismiss="offcanvas" aria-label="Close">
+      <span class="fas fa-2x fa-fw fa-times"></span>
+    </a>
+  </div>
+  <div class="offcanvas-body">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#visualizing-the-data">Visualizing the data</a></li>
+    <li><a href="#implementation">Implementation</a>
+      <ul>
+        <li><a href="#gradient-descent-without-feature-scaling">gradient descent without feature scaling</a></li>
+        <li><a href="#plot-decision-boundary">plot decision boundary</a></li>
+        <li><a href="#implementation-with-scipy">implementation with scipy</a></li>
+        <li><a href="#gradient-descent-with-feature-scaling">gradient descent with feature scaling</a></li>
+        <li><a href="#predictionevaluating-logistic-regression">Prediction/Evaluating logistic regression</a></li>
+      </ul>
+    </li>
+    <li><a href="#multi-variable-logistic-regression">multi-variable logistic regression</a>
+      <ul>
+        <li><a href="#visualizing-the-data-1">visualizing the data</a></li>
+        <li><a href="#feature-mapping">Feature Mapping</a></li>
+        <li><a href="#plot-decision-boundary-1">Plot Decision Boundary</a></li>
+        <li><a href="#multi-variable-logistic-regression-with-feature-scaling">multi-variable logistic regression with feature scaling</a></li>
+        <li><a href="#implementation-with-scipy-1">implementation with SciPy</a></li>
+      </ul>
+    </li>
+    <li><a href="#regularized-logistic-regression">Regularized logistic regression</a></li>
+  </ul>
+</nav>
+  </div>
+</div><div class="post-content mb-3"><h1 id="logistic-regression">Logistic Regression</h1>
+<p>In this part of the exercise, you will build a logistic regression model to predict whether a student gets admitted into a university.<br>
+Suppose that you are the administrator of a university department and you want to determine each applicant’s chance of admission based on their results on two exams. You have historical data from previous applicants that you can use as a training set for logistic regression. For each training example, you have the applicant’s scores on two exams and the admissions decision.
+Your task is to build a classification model that estimates an applicant’s probability of admission based the scores from those two exams.</p>
+<h2 id="visualizing-the-data">Visualizing the data</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="ln">2</span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="ln">3</span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&#34;ex2data1.txt&#34;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">,</span><span class="s2">&#34;Exam2&#34;</span><span class="p">,</span><span class="s2">&#34;Admitted&#34;</span><span class="p">])</span>
+<span class="ln">2</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="n">positive_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&#34;Admitted&#34;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+<span class="ln"> 2</span><span class="n">negative_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&#34;Admitted&#34;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+<span class="ln"> 3</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln"> 4</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln"> 5</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">positive_df</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">positive_df</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Admitted&#34;</span><span class="p">)</span>
+<span class="ln"> 6</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">negative_df</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">negative_df</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Not Admitted&#34;</span><span class="p">)</span>
+<span class="ln"> 7</span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&#34;Exam 1 Score&#34;</span><span class="p">)</span>
+<span class="ln"> 8</span><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&#34;Exam 2 Score&#34;</span><span class="p">)</span>
+<span class="ln"> 9</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&#34;Scatter plot of Training data&#34;</span><span class="p">)</span>
+<span class="ln">10</span><span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</code></pre></div><pre><code>&lt;matplotlib.legend.Legend at 0x7f813cb38588&gt;
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_3_2.png"
+   width="2550" height="2060" loading="lazy" />
+
+</p>
+<h2 id="implementation">Implementation</h2>
+<p>通过对比对数据是否进行归一化，可以看到梯度下降的速度的明显差距</p>
+<h3 id="gradient-descent-without-feature-scaling">gradient descent without feature scaling</h3>
+<p>不进行特征缩放时：1.学习率可能需要很小，代价函数才开始收敛。2.最终收敛所需的迭代次数非常多（收敛慢）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="k">def</span> <span class="nf">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="ln"> 2</span>    <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span> <span class="p">)</span>
+<span class="ln"> 3</span><span class="k">def</span> <span class="nf">cost_comput</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+<span class="ln"> 4</span>    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln"> 5</span>    <span class="n">first</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)))</span>
+<span class="ln"> 6</span>    <span class="n">second</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)))</span>
+<span class="ln"> 7</span>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">second</span> <span class="o">-</span> <span class="n">first</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+<span class="ln"> 8</span><span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+<span class="ln"> 9</span>    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">10</span>    <span class="n">distance</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span>
+<span class="ln">11</span><span class="c1">#     print((X.T * distance ).shape)</span>
+<span class="ln">12</span><span class="c1">#     return sum(np.multiply( distance,X )) / X.shape[0]</span>
+<span class="ln">13</span>    <span class="k">return</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">distance</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">/</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln">14</span>
+<span class="ln">15</span><span class="k">def</span> <span class="nf">logistic_regression_gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">iter_num</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+<span class="ln">16</span>    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="ln">17</span>    <span class="n">cost</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="ln">18</span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iter_num</span><span class="p">):</span>
+<span class="ln">19</span>        <span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">gradient</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="ln">20</span>        <span class="n">cost</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cost_comput</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+<span class="ln">21</span>    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">22</span>    <span class="k">return</span> <span class="n">theta</span><span class="p">,</span><span class="n">cost</span>
+<span class="ln">23</span>
+<span class="ln">24</span><span class="n">df</span><span class="p">[</span><span class="s2">&#34;ones&#34;</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+<span class="ln">25</span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">&#34;ones&#34;</span><span class="p">,</span><span class="s2">&#34;Exam1&#34;</span><span class="p">,</span><span class="s2">&#34;Exam2&#34;</span><span class="p">]])</span>
+<span class="ln">26</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&#34;Admitted&#34;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">27</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="ln">28</span>
+<span class="ln">29</span><span class="nb">print</span><span class="p">(</span><span class="n">gradient</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+<span class="ln">30</span><span class="nb">print</span><span class="p">(</span><span class="n">cost_comput</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+</code></pre></div><pre><code>[[ -0.1        -12.00921659 -11.26284221]]
+0.6931471805599453
+</code></pre>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">iter_num</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="ln">2</span><span class="n">theta</span><span class="p">,</span><span class="n">cost</span> <span class="o">=</span> <span class="n">logistic_regression_gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">iter_num</span><span class="p">,</span><span class="mf">0.0009</span><span class="p">)</span>
+<span class="ln">3</span><span class="nb">print</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+<span class="ln">4</span><span class="nb">print</span><span class="p">(</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="ln">5</span><span class="nb">print</span><span class="p">(</span><span class="n">cost</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="ln">6</span>
+<span class="ln">7</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln">8</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln">9</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">iter_num</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">cost</span><span class="p">)</span>
+</code></pre></div><pre><code>[[-0.06253015]
+ [ 0.01085921]
+ [ 0.00093747]]
+(3, 1)
+0.6254658375063237
+
+
+
+
+
+[&lt;matplotlib.lines.Line2D at 0x7f80eb778438&gt;]
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_6_3.png"
+   width="2971" height="1941" loading="lazy" />
+
+</p>
+<h3 id="plot-decision-boundary">plot decision boundary</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Exam1</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">df</span><span class="o">.</span><span class="n">Exam1</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="ln"> 2</span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span> <span class="o">/</span> <span class="o">-</span><span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln"> 3</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln"> 4</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln"> 5</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">positive_df</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">positive_df</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Admitted&#34;</span><span class="p">)</span>
+<span class="ln"> 6</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">negative_df</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">negative_df</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Not Admitted&#34;</span><span class="p">)</span>
+<span class="ln"> 7</span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&#34;Exam 1 Score&#34;</span><span class="p">)</span>
+<span class="ln"> 8</span><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&#34;Exam 2 Score&#34;</span><span class="p">)</span>
+<span class="ln"> 9</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&#34;Scatter plot of Training data&#34;</span><span class="p">)</span>
+<span class="ln">10</span><span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="ln">11</span><span class="c1"># print(f)</span>
+<span class="ln">12</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">)</span>
+</code></pre></div><pre><code>[&lt;matplotlib.lines.Line2D at 0x7f80ec43c0b8&gt;]
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_8_2.png"
+   width="2611" height="2060" loading="lazy" />
+
+</p>
+<h3 id="implementation-with-scipy">implementation with scipy</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">opt</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">&#34;ones&#34;</span><span class="p">,</span><span class="s2">&#34;Exam1&#34;</span><span class="p">,</span><span class="s2">&#34;Exam2&#34;</span><span class="p">]])</span>
+<span class="ln"> 4</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&#34;Admitted&#34;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="ln"> 5</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="ln"> 6</span>
+<span class="ln"> 7</span><span class="c1"># opt.fmin_tnc会把变量x0当作np.array处理，所以在写函数时要做相应处理</span>
+<span class="ln"> 8</span><span class="n">result</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">fmin_tnc</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">cost_comput</span><span class="p">,</span><span class="n">x0</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span><span class="n">fprime</span><span class="o">=</span><span class="n">gradient</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+<span class="ln"> 9</span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="ln">10</span><span class="n">theta</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln">11</span><span class="nb">print</span><span class="p">(</span><span class="n">cost_comput</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+<span class="ln">12</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">13</span>
+<span class="ln">14</span>
+<span class="ln">15</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Exam1</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">df</span><span class="o">.</span><span class="n">Exam1</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="ln">16</span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span> <span class="o">/</span> <span class="o">-</span><span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln">17</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln">18</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln">19</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">positive_df</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">positive_df</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Admitted&#34;</span><span class="p">)</span>
+<span class="ln">20</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">negative_df</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">negative_df</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Not Admitted&#34;</span><span class="p">)</span>
+<span class="ln">21</span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&#34;Exam 1 Score&#34;</span><span class="p">)</span>
+<span class="ln">22</span><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&#34;Exam 2 Score&#34;</span><span class="p">)</span>
+<span class="ln">23</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&#34;Scatter plot of Training data&#34;</span><span class="p">)</span>
+<span class="ln">24</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">)</span>
+<span class="ln">25</span><span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="ln">26</span><span class="c1"># print(f)</span>
+<span class="ln">27</span>
+</code></pre></div><pre><code>(array([-25.16131854,   0.20623159,   0.20147149]), 36, 0)
+0.20349770158947492
+
+
+
+
+
+&lt;matplotlib.legend.Legend at 0x7f80ebb1cbe0&gt;
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_10_3.png"
+   width="2550" height="2060" loading="lazy" />
+
+</p>
+<h3 id="gradient-descent-with-feature-scaling">gradient descent with feature scaling</h3>
+<p>进行特征缩放后：1.代价函数可以在学习率较大的情况下开始收敛。2.最终收敛所需的迭代次数非常少（收敛快）</p>
+<h4 id="关于归一化">关于归一化</h4>
+<p>1.归一化是一种线性变换，它不会改变数据集的很多性质<br>
+2.使用训练集的数据进行归一化，即使用训练集中均值和标准差进行归一化，称为归一化机制<br>
+3.进行预测时，数据必须经过训练集归一化机制处理，如进行模型精度评估时，测试集数据必须归一化</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&#34;ex2data1.txt&#34;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">,</span><span class="s2">&#34;Exam2&#34;</span><span class="p">,</span><span class="s2">&#34;Admitted&#34;</span><span class="p">])</span>
+<span class="ln"> 2</span><span class="n">X</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">,</span><span class="s2">&#34;Exam2&#34;</span><span class="p">]]</span>
+<span class="ln"> 3</span><span class="n">X</span> <span class="o">=</span> <span class="p">(</span> <span class="n">X</span><span class="o">-</span><span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="p">)</span> <span class="o">/</span> <span class="n">X</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="ln"> 4</span><span class="n">X</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">&#34;ones&#34;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln"> 5</span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="ln"> 6</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&#34;Admitted&#34;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span><span class="n">iter_num</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="ln"> 9</span><span class="n">alpha</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="ln">10</span><span class="n">theta</span><span class="p">,</span><span class="n">cost</span> <span class="o">=</span> <span class="n">logistic_regression_gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">iter_num</span><span class="p">,</span><span class="n">alpha</span><span class="p">)</span>
+<span class="ln">11</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln">12</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln">13</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">iter_num</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">cost</span><span class="p">)</span>
+<span class="ln">14</span><span class="nb">print</span><span class="p">(</span><span class="n">cost</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</code></pre></div><pre><code>0.20349773676821648
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_12_2.png"
+   width="2998" height="1941" loading="lazy" />
+
+</p>
+<h4 id="特征缩放下的决策边界">特征缩放下的决策边界</h4>
+<p>必须在统一的归一化机制下画图</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="c1"># X = np.array(X)</span>
+<span class="ln"> 2</span><span class="c1"># print(X[:,1:3])</span>
+<span class="ln"> 3</span><span class="n">df_X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">,</span><span class="s2">&#34;Exam2&#34;</span><span class="p">])</span>
+<span class="ln"> 4</span><span class="n">positive_df</span> <span class="o">=</span> <span class="n">df_X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+<span class="ln"> 5</span><span class="n">negative_df</span> <span class="o">=</span> <span class="n">df_X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+<span class="ln"> 6</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">df_X</span><span class="o">.</span><span class="n">Exam1</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">df_X</span><span class="o">.</span><span class="n">Exam1</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">df_X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="ln"> 7</span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span> <span class="o">/</span> <span class="o">-</span><span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln"> 8</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln"> 9</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln">10</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">positive_df</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">positive_df</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Admitted&#34;</span><span class="p">)</span>
+<span class="ln">11</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">negative_df</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">negative_df</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Not Admitted&#34;</span><span class="p">)</span>
+<span class="ln">12</span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&#34;Exam 1 Score&#34;</span><span class="p">)</span>
+<span class="ln">13</span><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&#34;Exam 2 Score&#34;</span><span class="p">)</span>
+<span class="ln">14</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&#34;Scatter plot of Training data&#34;</span><span class="p">)</span>
+<span class="ln">15</span><span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="ln">16</span><span class="c1"># print(f)</span>
+<span class="ln">17</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">)</span>
+</code></pre></div><pre><code>[&lt;matplotlib.lines.Line2D at 0x7f813ce04710&gt;]
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_14_2.png"
+   width="2532" height="2060" loading="lazy" />
+
+</p>
+<h4 id="特征缩放下在原数据尺度下的决策边界">特征缩放下在原数据尺度下的决策边界</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="n">df_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&#34;ex2data1.txt&#34;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">,</span><span class="s2">&#34;Exam2&#34;</span><span class="p">,</span><span class="s2">&#34;Admitted&#34;</span><span class="p">])</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="n">df_X</span> <span class="o">=</span> <span class="n">df_data</span><span class="p">[[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">,</span><span class="s2">&#34;Exam2&#34;</span><span class="p">]]</span>
+<span class="ln"> 4</span><span class="n">df_y</span> <span class="o">=</span> <span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Admitted&#34;</span><span class="p">]</span>
+<span class="ln"> 5</span><span class="n">df_norm_X</span> <span class="o">=</span> <span class="p">(</span> <span class="n">df_X</span><span class="o">-</span><span class="n">df_X</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="p">)</span><span class="o">/</span> <span class="n">df_X</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="ln"> 6</span><span class="n">df_norm_X</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">&#34;Ones&#34;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln"> 7</span><span class="n">mat_norm_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df_norm_X</span><span class="p">)</span>
+<span class="ln"> 8</span><span class="n">mat_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df_y</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln"> 9</span><span class="n">iter_num</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="ln">10</span><span class="n">alpha</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="ln">11</span><span class="n">theta</span><span class="p">,</span><span class="n">cost</span> <span class="o">=</span> <span class="n">logistic_regression_gradient_descent</span><span class="p">(</span><span class="n">mat_norm_X</span><span class="p">,</span><span class="n">mat_y</span><span class="p">,</span><span class="n">iter_num</span><span class="p">,</span><span class="n">alpha</span><span class="p">)</span>
+<span class="ln">12</span><span class="nb">print</span><span class="p">(</span><span class="n">cost</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="ln">13</span>
+<span class="ln">14</span>
+<span class="ln">15</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln">16</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln">17</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">iter_num</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">cost</span><span class="p">)</span>
+</code></pre></div><pre><code>0.20349773676821648
+
+
+
+
+
+[&lt;matplotlib.lines.Line2D at 0x7f80dfd587f0&gt;]
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_16_3.png"
+   width="2998" height="1941" loading="lazy" />
+
+</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">df_norm_X</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="n">df_norm_X</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="nb">len</span><span class="p">(</span><span class="n">df_norm_X</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">]))</span>
+<span class="ln"> 2</span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="o">-</span><span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln"> 3</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">df_X</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">+</span> <span class="n">df_X</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="ln"> 4</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span> <span class="o">*</span> <span class="n">df_X</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">+</span> <span class="n">df_X</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="ln"> 5</span><span class="n">positive_X</span> <span class="o">=</span> <span class="n">df_X</span><span class="p">[</span><span class="n">df_y</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span>
+<span class="ln"> 6</span><span class="n">negative_X</span> <span class="o">=</span> <span class="n">df_X</span><span class="p">[</span><span class="n">df_y</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln"> 7</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln"> 8</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln"> 9</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">positive_X</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">positive_X</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s2">&#34;+&#34;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Admitted&#34;</span><span class="p">)</span>
+<span class="ln">10</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">negative_X</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">negative_X</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s2">&#34;o&#34;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Not Admitted&#34;</span><span class="p">)</span>
+<span class="ln">11</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Decision Boundary&#34;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="ln">12</span><span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</code></pre></div><pre><code>&lt;matplotlib.legend.Legend at 0x7f80bb5afa90&gt;
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_17_2.png"
+   width="2493" height="1941" loading="lazy" />
+
+</p>
+<h3 id="predictionevaluating-logistic-regression">Prediction/Evaluating logistic regression</h3>
+<p>After learning the parameters, you can use the model to predict whether a particular student will be admitted. For a student with an Exam 1 score of 45 and an Exam 2 score of 85, you should expect to see an admission probability of 0.776.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="k">def</span> <span class="nf">prediction</span><span class="p">(</span><span class="n">exam1</span><span class="p">,</span><span class="n">exam2</span><span class="p">,</span><span class="n">normalization</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="ln"> 2</span>    <span class="k">if</span> <span class="n">normalization</span><span class="p">:</span>
+<span class="ln"> 3</span>        <span class="n">theta_X</span> <span class="o">=</span> <span class="p">(</span><span class="n">exam1</span><span class="o">-</span><span class="n">df_X</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">/</span> <span class="n">df_X</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">*</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> \
+<span class="ln"> 4</span>            <span class="o">+</span> <span class="p">(</span><span class="n">exam2</span><span class="o">-</span><span class="n">df_X</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">/</span> <span class="n">df_X</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">*</span> <span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> \
+<span class="ln"> 5</span>            <span class="o">+</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln"> 6</span>    <span class="k">else</span> <span class="p">:</span>
+<span class="ln"> 7</span>        <span class="n">theta_X</span> <span class="o">=</span> <span class="n">exam1</span> <span class="o">*</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">exam2</span> <span class="o">*</span> <span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln"> 8</span>    <span class="n">prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">theta_X</span><span class="p">))</span>
+<span class="ln"> 9</span>    <span class="n">predict</span> <span class="o">=</span> <span class="p">(</span><span class="n">prob</span><span class="o">&gt;=</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+<span class="ln">10</span>    <span class="k">return</span> <span class="n">prob</span><span class="p">,</span><span class="n">predict</span>
+<span class="ln">11</span>
+<span class="ln">12</span><span class="n">prediction</span><span class="p">(</span><span class="mi">45</span><span class="p">,</span><span class="mi">85</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div><pre><code>(array(0.77613222), 1)
+</code></pre>
+<h4 id="model-accuracy">Model Accuracy</h4>
+<p>Another way to evaluate the quality of the parameters we have found
+is to see how well the learned model predicts on our training set.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="k">def</span> <span class="nf">model_accuracy</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+<span class="ln">2</span>    <span class="n">m</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln">3</span>    <span class="k">return</span> <span class="p">(</span> <span class="n">m</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="nb">sum</span><span class="p">((</span><span class="n">predict</span> <span class="o">^</span> <span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">))</span> <span class="p">)</span><span class="o">/</span><span class="n">m</span>
+<span class="ln">4</span><span class="n">prob</span><span class="p">,</span><span class="n">predict</span> <span class="o">=</span> <span class="n">prediction</span><span class="p">(</span><span class="n">df_X</span><span class="p">[</span><span class="s2">&#34;Exam1&#34;</span><span class="p">],</span><span class="n">df_X</span><span class="p">[</span><span class="s2">&#34;Exam2&#34;</span><span class="p">],</span><span class="kc">True</span><span class="p">)</span>
+<span class="ln">5</span><span class="n">model_accuracy</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span><span class="n">mat_y</span><span class="p">)</span>
+</code></pre></div><pre><code>0.89
+</code></pre>
+<h2 id="multi-variable-logistic-regression">multi-variable logistic regression</h2>
+<p>In this part of the exercise, you will implement regularized logistic regression to predict whether microchips from a fabrication plant passes quality assurance (QA). During QA, each microchip goes through various tests to ensure it is functioning correctly.<br>
+Suppose you are the product manager of the factory and you have the
+test results for some microchips on two different tests. From these two tests,you would like to determine whether the microchips should be accepted or rejected. To help you make the decision, you have a dataset of test results on past microchips, from which you can build a logistic regression model.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">df_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&#34;ex2data2.txt&#34;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">,</span><span class="s2">&#34;Test2&#34;</span><span class="p">,</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">])</span>
+<span class="ln">2</span><span class="n">df_data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h3 id="visualizing-the-data-1">visualizing the data</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="n">positive_X</span> <span class="o">=</span> <span class="n">df_data</span><span class="p">[</span><span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span>
+<span class="ln"> 2</span><span class="n">negative_X</span> <span class="o">=</span> <span class="n">df_data</span><span class="p">[</span><span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span>
+<span class="ln"> 3</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln"> 4</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln"> 5</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">positive_X</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">],</span><span class="n">positive_X</span><span class="p">[</span><span class="s2">&#34;Test2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s2">&#34;+&#34;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s2">&#34;black&#34;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Passed QA&#34;</span><span class="p">)</span>
+<span class="ln"> 6</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">negative_X</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">],</span><span class="n">negative_X</span><span class="p">[</span><span class="s2">&#34;Test2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s2">&#34;o&#34;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s2">&#34;b&#34;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Not Passed QA&#34;</span><span class="p">)</span>
+<span class="ln"> 7</span><span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="ln"> 8</span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&#34;Microchip Test1&#34;</span><span class="p">)</span>
+<span class="ln"> 9</span><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&#34;Microchip Test2&#34;</span><span class="p">)</span>
+<span class="ln">10</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&#34;Training Data&#34;</span><span class="p">)</span>
+</code></pre></div><pre><code>Text(0.5, 1.0, 'Training Data')
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_25_2.png"
+   width="2598" height="2060" loading="lazy" />
+
+</p>
+<h3 id="feature-mapping">Feature Mapping</h3>
+<p>One way to fit the data better is to create more features from each data point. We will map the features into all polynomial terms of x1 and x2 up to the sixth power.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="k">def</span> <span class="nf">feature_mapping</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">degree</span><span class="p">,</span><span class="n">start_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="ln"> 2</span>    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>      
+<span class="ln"> 3</span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+<span class="ln"> 4</span>        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">degree</span><span class="o">-</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+<span class="ln"> 5</span>            <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">j</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">j</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
+<span class="ln"> 6</span>                <span class="k">continue</span>
+<span class="ln"> 7</span>            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">X</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="n">start_cols</span><span class="p">],</span><span class="n">i</span><span class="p">)</span> \
+<span class="ln"> 8</span>                      <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="n">start_cols</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">j</span><span class="p">)</span> <span class="p">]</span>
+<span class="ln"> 9</span>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="ln">10</span>
+<span class="ln">11</span><span class="n">df_X</span> <span class="o">=</span> <span class="n">df_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln">12</span><span class="n">df_X</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">&#34;Ones&#34;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln">13</span><span class="n">df_y</span> <span class="o">=</span> <span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">]</span>
+<span class="ln">14</span><span class="n">mat_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df_X</span><span class="p">)</span>
+<span class="ln">15</span><span class="n">mat_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df_y</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">16</span>
+<span class="ln">17</span>
+<span class="ln">18</span><span class="n">mat_X</span> <span class="o">=</span> <span class="n">feature_mapping</span><span class="p">(</span><span class="n">mat_X</span><span class="p">,</span><span class="n">start_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">degree</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="ln">19</span><span class="nb">print</span><span class="p">(</span><span class="n">mat_X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div><pre><code>(118, 28)
+</code></pre>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">iter_num</span> <span class="o">=</span> <span class="mi">100000</span>
+<span class="ln">2</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">7.3</span>
+<span class="ln">3</span><span class="n">theta</span><span class="p">,</span><span class="n">cost</span> <span class="o">=</span> <span class="n">logistic_regression_gradient_descent</span><span class="p">(</span><span class="n">mat_X</span><span class="p">,</span><span class="n">mat_y</span><span class="p">,</span><span class="n">iter_num</span><span class="p">,</span><span class="n">alpha</span><span class="p">)</span>
+<span class="ln">4</span><span class="nb">print</span><span class="p">(</span><span class="n">cost</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="ln">5</span>
+<span class="ln">6</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln">7</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln">8</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">iter_num</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">cost</span><span class="p">)</span>
+</code></pre></div><pre><code>0.279387711431147
+
+
+
+
+
+[&lt;matplotlib.lines.Line2D at 0x7f80dfad87f0&gt;]
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_28_3.png"
+   width="2971" height="1941" loading="lazy" />
+
+</p>
+<h3 id="plot-decision-boundary-1">Plot Decision Boundary</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="k">def</span> <span class="nf">plot_decision_boundary</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">density</span><span class="p">,</span><span class="n">degree</span><span class="p">,</span><span class="n">norm_arg</span><span class="o">=</span><span class="p">[],</span><span class="n">normalization</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="ln"> 2</span>    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="n">density</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> \
+<span class="ln"> 3</span>                    <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="n">density</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+<span class="ln"> 4</span>    <span class="n">new_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span>
+<span class="ln"> 5</span>    <span class="k">if</span> <span class="n">normalization</span><span class="p">:</span>
+<span class="ln"> 6</span>        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">norm_arg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">norm_arg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="ln"> 7</span>        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">norm_arg</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">norm_arg</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> 
+<span class="ln"> 8</span>        <span class="n">new_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">new_X</span><span class="p">,</span><span class="n">x</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span><span class="n">y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span>
+<span class="ln"> 9</span>        <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="n">density</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> \
+<span class="ln">10</span>                    <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="n">density</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span> 
+<span class="ln">11</span>    <span class="k">else</span> <span class="p">:</span>
+<span class="ln">12</span>        <span class="n">new_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">new_X</span><span class="p">,</span><span class="n">x</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span><span class="n">y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span>    
+<span class="ln">13</span>    <span class="n">new_X</span> <span class="o">=</span> <span class="n">feature_mapping</span><span class="p">(</span><span class="n">new_X</span><span class="p">,</span><span class="n">start_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">degree</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="ln">14</span>
+<span class="ln">15</span>    <span class="n">decision</span> <span class="o">=</span> <span class="n">new_X</span> <span class="o">*</span> <span class="n">theta</span>
+<span class="ln">16</span>    <span class="n">decision</span> <span class="o">=</span> <span class="n">decision</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="ln">17</span>
+<span class="ln">18</span>    <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln">19</span>    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="ln">20</span>    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">positive_X</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">],</span><span class="n">positive_X</span><span class="p">[</span><span class="s2">&#34;Test2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s2">&#34;+&#34;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">)</span>
+<span class="ln">21</span>    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">negative_X</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">],</span><span class="n">negative_X</span><span class="p">[</span><span class="s2">&#34;Test2&#34;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s2">&#34;o&#34;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Not Passed QA&#34;</span><span class="p">)</span>
+<span class="ln">22</span>    <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">decision</span><span class="p">,</span><span class="n">levels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">])</span>
+<span class="ln">23</span>
+<span class="ln">24</span>
+<span class="ln">25</span><span class="n">density</span><span class="o">=</span><span class="mi">100</span>
+<span class="ln">26</span><span class="n">degree</span><span class="o">=</span><span class="mi">6</span>
+<span class="ln">27</span><span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">density</span><span class="p">,</span><span class="n">degree</span><span class="p">)</span>
+</code></pre></div><pre><code>&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_30_1.png"
+   width="3013" height="2409" loading="lazy" />
+
+</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="c1"># prediction</span>
+<span class="ln">2</span><span class="n">x</span> <span class="o">=</span> <span class="n">mat_X</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span>
+<span class="ln">3</span><span class="c1"># print(x)</span>
+<span class="ln">4</span><span class="n">predict</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)</span>
+<span class="ln">5</span><span class="nb">print</span><span class="p">(</span><span class="n">predict</span><span class="p">)</span>
+<span class="ln">6</span><span class="nb">print</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+</code></pre></div><pre><code>[[0.95399812]]
+[[  3.98319781]
+ [  1.36850003]
+ [  5.43718249]
+ [ -4.18483606]
+ [ -4.81980061]
+ [-12.77108849]
+ [  7.73431623]
+ [  1.00059713]
+ [ -9.00207478]
+ [  7.01416097]
+ [ -1.22162831]
+ [-10.09882437]
+ [ -7.79890678]
+ [ -6.23460064]
+ [  3.07355121]
+ [ -6.66547573]
+ [ -6.68395832]
+ [-10.46038185]
+ [  3.8841028 ]
+ [  4.6499442 ]
+ [ 11.74675575]
+ [  7.95790457]
+ [ -2.01599155]
+ [ -2.71991866]
+ [ -0.8359666 ]
+ [ -3.12881585]
+ [ -2.20413302]
+ [ -9.47196431]]
+</code></pre>
+<h3 id="multi-variable-logistic-regression-with-feature-scaling">multi-variable logistic regression with feature scaling</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="n">df_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&#34;ex2data2.txt&#34;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">,</span><span class="s2">&#34;Test2&#34;</span><span class="p">,</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">])</span>
+<span class="ln"> 2</span><span class="n">df_X</span> <span class="o">=</span> <span class="n">df_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln"> 3</span><span class="n">df_y</span> <span class="o">=</span> <span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">]</span>
+<span class="ln"> 4</span><span class="n">df_norm_X</span> <span class="o">=</span> <span class="p">(</span> <span class="n">df_X</span><span class="o">-</span><span class="n">df_X</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="p">)</span> <span class="o">/</span> <span class="n">df_X</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="ln"> 5</span>
+<span class="ln"> 6</span><span class="n">df_norm_X</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">&#34;Ones&#34;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span>
+<span class="ln"> 9</span><span class="n">mat_norm_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df_norm_X</span><span class="p">)</span>
+<span class="ln">10</span><span class="n">mat_norm_X</span> <span class="o">=</span> <span class="n">feature_mapping</span><span class="p">(</span><span class="n">mat_norm_X</span><span class="p">,</span><span class="n">start_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">degree</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="ln">11</span><span class="n">mat_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df_y</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>        
+<span class="ln">12</span><span class="n">mat_norm_X</span><span class="o">.</span><span class="n">shape</span>
+<span class="ln">13</span>
+</code></pre></div><pre><code>(118, 28)
+</code></pre>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">iter_num</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="ln">2</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="ln">3</span><span class="n">theta</span><span class="p">,</span><span class="n">cost</span> <span class="o">=</span> <span class="n">logistic_regression_gradient_descent</span><span class="p">(</span><span class="n">mat_norm_X</span><span class="p">,</span><span class="n">mat_y</span><span class="p">,</span><span class="n">iter_num</span><span class="p">,</span><span class="n">alpha</span><span class="p">)</span>
+<span class="ln">4</span><span class="nb">print</span><span class="p">(</span><span class="n">cost</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="ln">5</span>
+<span class="ln">6</span>
+<span class="ln">7</span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="ln">8</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="ln">9</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">iter_num</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">cost</span><span class="p">)</span>
+</code></pre></div><pre><code>0.2789910658508999
+
+
+
+
+
+[&lt;matplotlib.lines.Line2D at 0x7f80dd66e630&gt;]
+
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_34_3.png"
+   width="2945" height="1941" loading="lazy" />
+
+</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span><span class="n">density</span><span class="o">=</span><span class="mi">100</span>
+<span class="ln">2</span><span class="n">degree</span><span class="o">=</span><span class="mi">6</span>
+<span class="ln">3</span><span class="n">norm_arg</span><span class="o">=</span><span class="p">[</span><span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="ln">4</span>         <span class="p">,</span><span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Test2&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Test2&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()]</span>
+<span class="ln">5</span><span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">density</span><span class="p">,</span><span class="n">degree</span><span class="p">,</span><span class="n">norm_arg</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div><pre><code>&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_35_1.png"
+   width="3013" height="2409" loading="lazy" />
+
+</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln">1</span>
+</code></pre></div><h3 id="implementation-with-scipy-1">implementation with SciPy</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">opt</span>
+<span class="ln"> 2</span>
+<span class="ln"> 3</span><span class="n">degree</span><span class="o">=</span><span class="mi">6</span>
+<span class="ln"> 4</span>
+<span class="ln"> 5</span><span class="n">df_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&#34;ex2data2.txt&#34;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">,</span><span class="s2">&#34;Test2&#34;</span><span class="p">,</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">])</span>
+<span class="ln"> 6</span><span class="n">df_X</span> <span class="o">=</span> <span class="n">df_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln"> 7</span><span class="n">df_y</span> <span class="o">=</span> <span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">]</span>
+<span class="ln"> 8</span><span class="n">arr_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_X</span><span class="p">))</span>
+<span class="ln"> 9</span><span class="n">mat_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">arr_X</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df_X</span><span class="p">)])</span>
+<span class="ln">10</span><span class="n">mat_X</span> <span class="o">=</span> <span class="n">feature_mapping</span><span class="p">(</span><span class="n">mat_X</span><span class="p">,</span><span class="n">start_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">degree</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="ln">11</span><span class="n">mat_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df_y</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">12</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mat_X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="ln">13</span>
+<span class="ln">14</span><span class="c1"># 注意：opt.fmin_tnc或者opt.minimize</span>
+<span class="ln">15</span><span class="c1"># 会把变量x0当作np.array处理，所以在写函数时要做相应处理</span>
+<span class="ln">16</span><span class="c1"># res = opt.minimize(fun=cost_comput, x0=theta, args=(mat_X,mat_y), method=&#39;Powell&#39;, jac=gradient)</span>
+<span class="ln">17</span><span class="n">res</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">cost_comput</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">mat_X</span><span class="p">,</span><span class="n">mat_y</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;L-BFGS-B&#39;</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">gradient</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span> <span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="ln">18</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&#34;x&#34;</span><span class="p">])</span>
+<span class="ln">19</span>
+<span class="ln">20</span><span class="nb">print</span><span class="p">(</span><span class="n">cost_comput</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">mat_X</span><span class="p">,</span><span class="n">mat_y</span><span class="p">))</span>
+<span class="ln">21</span><span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">theta</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">density</span><span class="p">,</span><span class="n">degree</span><span class="p">)</span>
+<span class="ln">22</span>
+</code></pre></div><pre><code>0.2702802021340963
+
+
+
+&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_38_2.png"
+   width="3013" height="2409" loading="lazy" />
+
+</p>
+<h2 id="regularized-logistic-regression">Regularized logistic regression</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="k">def</span> <span class="nf">reg_cost_comput</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">reg_lambda</span><span class="p">):</span>
+<span class="ln"> 2</span>    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln"> 3</span>    <span class="n">first</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">theta</span><span class="p">)),</span><span class="n">y</span><span class="p">)</span>
+<span class="ln"> 4</span>    <span class="n">second</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">theta</span><span class="p">)),</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln"> 5</span>    <span class="n">reg</span> <span class="o">=</span> <span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">reg_lambda</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="ln"> 6</span>    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">second</span><span class="o">-</span><span class="n">first</span><span class="p">)</span> <span class="o">/</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">reg</span><span class="p">)</span>
+<span class="ln"> 7</span>
+<span class="ln"> 8</span><span class="k">def</span> <span class="nf">reg_gradient</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">reg_lambda</span><span class="p">):</span>
+<span class="ln"> 9</span>    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">10</span>    <span class="n">error</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">theta</span><span class="p">)</span><span class="o">-</span><span class="n">y</span>
+<span class="ln">11</span>    <span class="n">grad</span> <span class="o">=</span> <span class="p">(</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">error</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="ln">12</span>    
+<span class="ln">13</span>    <span class="n">reg</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">reg_lambda</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+<span class="ln">14</span>    <span class="n">grad</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">grad</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span><span class="n">reg</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">15</span>    <span class="k">return</span> <span class="n">grad</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="n">degree</span><span class="o">=</span><span class="mi">6</span>
+<span class="ln"> 2</span><span class="n">reg_lambda</span><span class="o">=</span><span class="mi">1</span>
+<span class="ln"> 3</span>
+<span class="ln"> 4</span><span class="n">df_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&#34;ex2data2.txt&#34;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">,</span><span class="s2">&#34;Test2&#34;</span><span class="p">,</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">])</span>
+<span class="ln"> 5</span><span class="n">df_X</span> <span class="o">=</span> <span class="n">df_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln"> 6</span><span class="n">df_y</span> <span class="o">=</span> <span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">]</span>
+<span class="ln"> 7</span><span class="n">arr_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_X</span><span class="p">))</span>
+<span class="ln"> 8</span><span class="n">mat_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">arr_X</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df_X</span><span class="p">)])</span>
+<span class="ln"> 9</span><span class="n">mat_X</span> <span class="o">=</span> <span class="n">feature_mapping</span><span class="p">(</span><span class="n">mat_X</span><span class="p">,</span><span class="n">degree</span><span class="p">,</span><span class="n">start_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln">10</span><span class="n">mat_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df_y</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">11</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mat_X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="ln">12</span>
+<span class="ln">13</span>
+<span class="ln">14</span><span class="c1"># reg_cost_comput(theta,mat_X,mat_y,reg_lambda)</span>
+<span class="ln">15</span><span class="c1"># reg_gradient(theta,mat_X,mat_y,reg_lambda)</span>
+<span class="ln">16</span>
+<span class="ln">17</span><span class="n">res</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">reg_cost_comput</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">mat_X</span><span class="p">,</span><span class="n">mat_y</span><span class="p">,</span><span class="n">reg_lambda</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;L-BFGS-B&#39;</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">reg_gradient</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">})</span>
+<span class="ln">18</span><span class="c1"># print(res)</span>
+<span class="ln">19</span>
+<span class="ln">20</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&#34;x&#34;</span><span class="p">])</span>
+<span class="ln">21</span><span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">theta</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">density</span><span class="p">,</span><span class="n">degree</span><span class="p">)</span>
+</code></pre></div><pre><code>&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_41_1.png"
+   width="3013" height="2409" loading="lazy" />
+
+</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="n">degree</span><span class="o">=</span><span class="mi">6</span>
+<span class="ln"> 2</span><span class="n">reg_lambda</span><span class="o">=</span><span class="mi">100</span>
+<span class="ln"> 3</span>
+<span class="ln"> 4</span><span class="n">df_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&#34;ex2data2.txt&#34;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">,</span><span class="s2">&#34;Test2&#34;</span><span class="p">,</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">])</span>
+<span class="ln"> 5</span><span class="n">df_X</span> <span class="o">=</span> <span class="n">df_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln"> 6</span><span class="n">df_y</span> <span class="o">=</span> <span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">]</span>
+<span class="ln"> 7</span><span class="n">arr_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_X</span><span class="p">))</span>
+<span class="ln"> 8</span><span class="n">mat_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">arr_X</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df_X</span><span class="p">)])</span>
+<span class="ln"> 9</span><span class="n">mat_X</span> <span class="o">=</span> <span class="n">feature_mapping</span><span class="p">(</span><span class="n">mat_X</span><span class="p">,</span><span class="n">degree</span><span class="p">,</span><span class="n">start_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln">10</span><span class="n">mat_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df_y</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">11</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mat_X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="ln">12</span>
+<span class="ln">13</span>
+<span class="ln">14</span><span class="c1"># reg_cost_comput(theta,mat_X,mat_y,reg_lambda)</span>
+<span class="ln">15</span><span class="c1"># reg_gradient(theta,mat_X,mat_y,reg_lambda)</span>
+<span class="ln">16</span>
+<span class="ln">17</span><span class="n">res</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">reg_cost_comput</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">mat_X</span><span class="p">,</span><span class="n">mat_y</span><span class="p">,</span><span class="n">reg_lambda</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;L-BFGS-B&#39;</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">reg_gradient</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">})</span>
+<span class="ln">18</span><span class="c1"># print(res)</span>
+<span class="ln">19</span>
+<span class="ln">20</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&#34;x&#34;</span><span class="p">])</span>
+<span class="ln">21</span><span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">theta</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">density</span><span class="p">,</span><span class="n">degree</span><span class="p">)</span>
+</code></pre></div><pre><code>&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_42_1.png"
+   width="3013" height="2409" loading="lazy" />
+
+</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ln"> 1</span><span class="n">degree</span><span class="o">=</span><span class="mi">6</span>
+<span class="ln"> 2</span><span class="n">reg_lambda</span><span class="o">=</span><span class="mi">0</span>
+<span class="ln"> 3</span>
+<span class="ln"> 4</span><span class="n">df_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&#34;ex2data2.txt&#34;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;Test1&#34;</span><span class="p">,</span><span class="s2">&#34;Test2&#34;</span><span class="p">,</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">])</span>
+<span class="ln"> 5</span><span class="n">df_X</span> <span class="o">=</span> <span class="n">df_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln"> 6</span><span class="n">df_y</span> <span class="o">=</span> <span class="n">df_data</span><span class="p">[</span><span class="s2">&#34;Passed_QA&#34;</span><span class="p">]</span>
+<span class="ln"> 7</span><span class="n">arr_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_X</span><span class="p">))</span>
+<span class="ln"> 8</span><span class="n">mat_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">arr_X</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df_X</span><span class="p">)])</span>
+<span class="ln"> 9</span><span class="n">mat_X</span> <span class="o">=</span> <span class="n">feature_mapping</span><span class="p">(</span><span class="n">mat_X</span><span class="p">,</span><span class="n">degree</span><span class="p">,</span><span class="n">start_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="ln">10</span><span class="n">mat_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">df_y</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="ln">11</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mat_X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="ln">12</span>
+<span class="ln">13</span>
+<span class="ln">14</span><span class="c1"># reg_cost_comput(theta,mat_X,mat_y,reg_lambda)</span>
+<span class="ln">15</span><span class="c1"># reg_gradient(theta,mat_X,mat_y,reg_lambda)</span>
+<span class="ln">16</span>
+<span class="ln">17</span><span class="n">res</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">reg_cost_comput</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">mat_X</span><span class="p">,</span><span class="n">mat_y</span><span class="p">,</span><span class="n">reg_lambda</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;L-BFGS-B&#39;</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">reg_gradient</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">})</span>
+<span class="ln">18</span><span class="c1"># print(res)</span>
+<span class="ln">19</span>
+<span class="ln">20</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&#34;x&#34;</span><span class="p">])</span>
+<span class="ln">21</span><span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">theta</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">density</span><span class="p">,</span><span class="n">degree</span><span class="p">)</span>
+</code></pre></div><pre><code>&lt;Figure size 432x288 with 0 Axes&gt;
+</code></pre>
+<p><img class="img-fluid" alt="png" src="/ML_CS229_exercise2/output_43_1.png"
+   width="3013" height="2409" loading="lazy" />
+
+</p>
+</div><div class="modal fade" id="rewardModal" tabindex="-1" aria-labelledby="rewardModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content surface">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rewardModalLabel"><i class="fas fa-fw fa-medal"></i>Reward</h5>
+        <a href="#" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-fw fa-times"></i></a>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs mb-3" role="tablist"><li class="nav-item" role="presentation">
+            <a class="nav-link active" id="reward-alipay-tab" data-bs-toggle="tab" href="#reward-alipay" role="tab" aria-controls="reward-alipay" aria-selected="true">
+              <i class="fab fa-fw fa-alipay"></i>Alipay
+            </a>
+          </li><li class="nav-item" role="presentation">
+            <a class="nav-link" id="reward-wechat-tab" data-bs-toggle="tab" href="#reward-wechat" role="tab" aria-controls="reward-wechat" aria-selected="true">
+              <i class="fab fa-fw fa-weixin"></i>WeChat
+            </a>
+          </li></ul>
+        <div class="tab-content" id="rewardTabContent"><div class="tab-pane fade post-reward-content show active" id="reward-alipay" role="tabpanel" aria-labelledby="reward-alipay-tab">
+            <img class="img-fluid post-reward-img" src="/images/reward/alipay.png" loading="lazy" />
+          </div><div class="tab-pane fade post-reward-content show" id="reward-wechat" role="tabpanel" aria-labelledby="reward-wechat-tab">
+            <img class="img-fluid post-reward-img" src="/images/reward/wechat.png" loading="lazy" />
+          </div></div>
+      </div>
+    </div>
+  </div>
+</div><hr /><div class="post-navs d-flex mb-3 justify-content-between">
+  <div class="post-nav w-50"><div class="prev-post btn btn-sm">
+      <a href="/en/posts/ml_cs229_exercise1/">ML_CS229_exercise1
+</a>
+    </div></div>
+  <div class="post-nav flex-row-reverse"><div class="next-post btn btn-sm">
+      <a href="/en/posts/tutorialnotebook/">TutorialNotebook
+</a>
+    </div></div>
+</div><section class="related-posts">
+    <h3>Related Posts</h3>
+    <ul class="related-posts"><li><a href="/en/posts/ml_cs229_exercise1/">ML_CS229_exercise1
+</a></li><li><a href="/en/about/">About
+</a></li><li><a href="/en/tutorialnotebook/">
+</a></li></ul>
+  </section></article><div class="post-comments surface row"><script src="https://utteranc.es/client.js"
+  repo="sicnu-long/sicnu-long.github.io"
+  issue-term="pathname"
+  label="comment"
+  theme="github-light"
+  crossorigin="anonymous"
+  async>
+</script></div></div>
+</div><aside class="col-lg-4 sidebar d-flex">
+  <div class="container"><section class="profile surface row text-center">
+  <div class="col-12 d-flex align-items-center justify-content-center"><img class="profile-avatar rounded-circle" alt="SICNU-Long" src="/images/profile.png"
+   width="500" height="500" loading="lazy" />
+</div>
+  <div class="col-12 profile-meta"><div class="profile-name">SICNU-Long</div><div class="profile-bio">Carpe diem</div><div class="profile-company"><i class="fas fa-fw fa-building"></i>Sichuan Normal University</div><div class="profile-location"><i class="fas fa-fw fa-map-marker-alt"></i>Chengdu</div><div class="profile-about"><i class="fas fa-fw fa-info-circle"></i><a href="/en/about/">About</a></div></div>
+</section>
+  <section class="recent-posts row surface">
+  <h4>Recent Posts</h4>
+  <ul><li><a href="/en/posts/tutorialnotebook/">TutorialNotebook
+</a></li><li><a href="/en/posts/ml_cs229_exercise2/">ML_CS229_exercise2
+</a></li><li><a href="/en/posts/ml_cs229_exercise1/">ML_CS229_exercise1
+</a></li></ul>
+</section></div>
+</aside>
+</div>
+    </main><footer class="footer mt-auto py-3 text-center container"><nav class="social-links nav my-2 justify-content-center"><a class="nav-link social-link" href="mailto:sicnu-long@stu.sicnu.edu.cn" title="Email">
+      <i class="fas fa-fw fa-2x fa-envelope"></i>
+    </a><a class="nav-link social-link" target="_blank" href="https://github.com/sicnu-long" title="GitHub" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-github"></i>
+      </a></nav>
+<div class="copyright mb-2">
+  Copyright © 2021-2021 Long. All Rights Reserved.
+</div>
+</footer>
+<a id="btnScrollToTop" class="btn-scroll-to-top">
+  <i class="fas fa-fw fa-chevron-circle-up fa-2x"></i>
+</a>
+</body>
+</html>

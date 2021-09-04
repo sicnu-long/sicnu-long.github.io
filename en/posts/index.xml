@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Long&#39;s Blog</title>
+    <link>/en/posts/</link>
+    <description>Recent content in Posts on Long&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>Copyright © 2021-{year} Long. All Rights Reserved.</copyright>
+    <lastBuildDate>Sat, 04 Sep 2021 18:38:20 +0800</lastBuildDate><atom:link href="/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TutorialNotebook</title>
+      <link>/en/posts/tutorialnotebook/</link>
+      <pubDate>Sat, 04 Sep 2021 18:38:20 +0800</pubDate>
+      
+      <guid>/en/posts/tutorialnotebook/</guid>
+      <description>Python Tutorial of Machine-Learning Python Shell Python shell, a place where you can type Python code and immediately see the results. Python Shell The Python shell that&amp;rsquo;s used here is actually not the original one; we&amp;rsquo;re using IPython, short for Interactive Python(简称为交互式Python), which is some kind of juiced up version</description>
+    </item>
+    
+    <item>
+      <title>ML_CS229_exercise2</title>
+      <link>/en/posts/ml_cs229_exercise2/</link>
+      <pubDate>Sat, 04 Sep 2021 18:32:53 +0800</pubDate>
+      
+      <guid>/en/posts/ml_cs229_exercise2/</guid>
+      <description>Logistic Regression In this part of the exercise, you will build a logistic regression model to predict whether a student gets admitted into a university. Suppose that you are the administrator of a university department and you want to determine each applicant’s chance of admission based on their results on two exams. You have historical data from previous applicants that</description>
+    </item>
+    
+    <item>
+      <title>ML_CS229_exercise1</title>
+      <link>/en/posts/ml_cs229_exercise1/</link>
+      <pubDate>Sat, 04 Sep 2021 17:22:03 +0800</pubDate>
+      
+      <guid>/en/posts/ml_cs229_exercise1/</guid>
+      <description>Programming Exercise of Machine Learning andrew ng&amp;rsquo;CS 229 Exercise 1: Linear Regression Linear regression with one variable In this part of this exercise, you will implement linear regression with one variable to predict profits for a food truck. Suppose you are the CEO of a restaurant franchise and are considering different cities for opening a new outlet. The chain already has trucks in various cities and you have data for</description>
+    </item>
+    
+  </channel>
+</rss>
